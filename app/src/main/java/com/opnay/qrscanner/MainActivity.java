@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity implements Detector.Processo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tv = (TextView) findViewById(R.id.textView);
-        sfv = (SurfaceView) findViewById(R.id.surfaceView);
+        tv = findViewById(R.id.textView);
+        sfv = findViewById(R.id.surfaceView);
 
         barcodeDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.ALL_FORMATS).build();
         barcodeDetector.setProcessor(this);

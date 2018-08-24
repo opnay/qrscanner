@@ -44,11 +44,9 @@ public class MainActivity extends AppCompatActivity
         sfv.getHolder().addCallback(this);
     }
 
+    // Detector.Processor<Barcode>
     @Override
-    public void release() {
-
-    }
-
+    public void release() {}
     @Override
     public void receiveDetections(Detector.Detections<Barcode> detections) {
         final SparseArray<Barcode> barcodes = detections.getDetectedItems();

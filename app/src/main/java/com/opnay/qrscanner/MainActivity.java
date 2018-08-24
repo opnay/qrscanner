@@ -81,12 +81,7 @@ public class MainActivity extends AppCompatActivity implements Detector.Processo
             final StringBuilder sb = new StringBuilder();
             for (int i = 0; i < barcodes.size(); i++)
                 sb.append(barcodes.valueAt(i).rawValue).append("\n");
-            tv.post(new Runnable() {
-                @Override
-                public void run() {
-                    tv.setText(sb.toString());
-                }
-            });
+            tv.post(() -> tv.setText(sb.toString()));
         }
     }
 }

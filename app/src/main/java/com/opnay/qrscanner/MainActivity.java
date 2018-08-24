@@ -21,8 +21,11 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity
         implements Detector.Processor<Barcode>, SurfaceHolder.Callback {
 
+    // View
     private TextView tv;
     private SurfaceView sfv;
+
+    // Camera
     private CameraSource cameraSource;
 
     @Override
@@ -30,18 +33,22 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Find View
         tv = findViewById(R.id.textView);
         sfv = findViewById(R.id.surfaceView);
 
+        // BarcodeDetector Build
         BarcodeDetector barcodeDetector =
                 new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.ALL_FORMATS).build();
         barcodeDetector.setProcessor(this);
 
+        // Set Camera
         cameraSource = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setRequestedPreviewSize(1024, 768)
                 .setAutoFocusEnabled(true)
                 .build();
 
+        // Add SurfaceHolder.Callback
         sfv.getHolder().addCallback(this);
     }
 
@@ -52,10 +59,13 @@ public class MainActivity extends AppCompatActivity
     public void receiveDetections(Detector.Detections<Barcode> detections) {
         final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 
+        // Barcodes contents write to tv
         if (barcodes.size() != 0) {
             final StringBuilder sb = new StringBuilder();
+
             for (int i = 0; i < barcodes.size(); i++)
                 sb.append(barcodes.valueAt(i).rawValue).append("\n");
+
             tv.post(() -> tv.setText(sb.toString()));
         }
     }
@@ -64,13 +74,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try {
+            // Check Permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
 
+                // Request Permission
                 ActivityCompat
                         .requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1024);
                 return;
             }
+
+            // Camera Start
             cameraSource.start(sfv.getHolder());
         } catch (IOException e) {
             Log.e("MainActivity", e.getMessage());

@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity
 
     private TextView tv;
     private SurfaceView sfv;
-    private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
 
     @Override
@@ -34,11 +33,13 @@ public class MainActivity extends AppCompatActivity
         tv = findViewById(R.id.textView);
         sfv = findViewById(R.id.surfaceView);
 
-        barcodeDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.ALL_FORMATS).build();
+        BarcodeDetector barcodeDetector =
+                new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.ALL_FORMATS).build();
         barcodeDetector.setProcessor(this);
 
         cameraSource = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
-                .setRequestedPreviewSize(1024, 768).setAutoFocusEnabled(true)
+                .setRequestedPreviewSize(1024, 768)
+                .setAutoFocusEnabled(true)
                 .build();
 
         sfv.getHolder().addCallback(this);
@@ -63,8 +64,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try {
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1024);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat
+                        .requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1024);
                 return;
             }
             cameraSource.start(sfv.getHolder());

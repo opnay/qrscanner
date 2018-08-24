@@ -1,11 +1,10 @@
 package com.opnay.qrscanner;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
@@ -19,7 +18,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements Detector.Processor<Barcode> {
+public class MainActivity extends AppCompatActivity
+        implements Detector.Processor<Barcode>, SurfaceHolder.Callback {
 
     private TextView tv;
     private SurfaceView sfv;
@@ -41,31 +41,7 @@ public class MainActivity extends AppCompatActivity implements Detector.Processo
                 .setRequestedPreviewSize(1024, 768).setAutoFocusEnabled(true)
                 .build();
 
-        final Activity activity = this;
-        sfv.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                try {
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.CAMERA}, 1024);
-                        return;
-                    }
-                    cameraSource.start(sfv.getHolder());
-                } catch (IOException e) {
-                    Log.e("MainActivity", e.getMessage());
-                }
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-                cameraSource.stop();
-            }
-        });
+        sfv.getHolder().addCallback(this);
     }
 
     @Override
@@ -84,4 +60,23 @@ public class MainActivity extends AppCompatActivity implements Detector.Processo
             tv.post(() -> tv.setText(sb.toString()));
         }
     }
+
+    // SurfaceHolder.Callback
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        try {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1024);
+                return;
+            }
+            cameraSource.start(sfv.getHolder());
+        } catch (IOException e) {
+            Log.e("MainActivity", e.getMessage());
+        }
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {}
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) { cameraSource.stop(); }
 }
